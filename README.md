@@ -14,3 +14,7 @@
    ```bash
    java -cp bin server.ServerMain
 
+2. Lancez l'interface graphique :
+
+```bash
+   java -cp bin client.ClientMain
