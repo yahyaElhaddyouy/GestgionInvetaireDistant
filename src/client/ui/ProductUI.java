@@ -1,89 +1,3 @@
-//package client.ui;
-//
-//import client.controllers.ProductController;
-//import shared.models.Product;
-//
-//import javax.swing.*;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
-//import java.util.List;
-//
-//public class ProductUI {
-//    private JFrame frame;
-//    private ProductController productController;
-//
-//    public ProductUI(ProductController productController) {
-//        if (productController == null) {
-//            throw new IllegalArgumentException("ProductController cannot be null");
-//        }
-//
-//        this.productController = productController;
-//
-//        frame = new JFrame("Product Management");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(500, 400);
-//        frame.setLayout(null);
-//
-//        JButton listButton = new JButton("List Products");
-//        listButton.setBounds(50, 50, 150, 30);
-//        frame.add(listButton);
-//
-//        listButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                handleListProducts();
-//            }
-//        });
-//
-//        JButton addButton = new JButton("Add Product");
-//        addButton.setBounds(250, 50, 150, 30);
-//        frame.add(addButton);
-//
-//        addButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                handleAddProduct();
-//            }
-//        });
-//    }
-//
-//    private void handleListProducts() {
-//        try {
-//            List<Product> products = productController.getAllProducts();
-//            StringBuilder productList = new StringBuilder("Products:\n");
-//            for (Product product : products) {
-//                productList.append(product.getName())
-//                        .append(" - $").append(product.getPrice()).append("\n");
-//            }
-//            JOptionPane.showMessageDialog(frame, productList.toString());
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
-//        }
-//    }
-//
-//    private void handleAddProduct() {
-//        String name = JOptionPane.showInputDialog("Enter product name:");
-//        String category = JOptionPane.showInputDialog("Enter product category:");
-//        int quantity = Integer.parseInt(JOptionPane.showInputDialog("Enter product quantity:"));
-//        double price = Double.parseDouble(JOptionPane.showInputDialog("Enter product price:"));
-//
-//        try {
-//            Product product = new Product(0, name, category, quantity, price);
-//            productController.addProduct(product);
-//            JOptionPane.showMessageDialog(frame, "Product added successfully!");
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(frame, "Error: " + ex.getMessage());
-//        }
-//    }
-//
-//    public void show() {
-//        frame.setVisible(true);
-//    }
-//}
-
-
-
-
 package client.ui;
 
 import client.controllers.ProductController;
@@ -91,6 +5,7 @@ import shared.models.Product;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -108,21 +23,50 @@ public class ProductUI {
 
         this.productController = productController;
 
+        // Set up the main frame
         frame = new JFrame("Product Management");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 500);
+        frame.setSize(800, 400); // Window size
         frame.setLayout(null);
 
-        // Create table model and JTable
+        // Custom panel with gradient background
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(0x93A5CF), // Start color
+                        0, getHeight(), new Color(0xE4EFE9) // End color
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        backgroundPanel.setLayout(null);
+        backgroundPanel.setBounds(0, 0, 1000, 500);
+        frame.add(backgroundPanel);
+
+        // Load and scale the image
+        JLabel imageLabel = new JLabel();
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/resources/bg.png")); // Adjust the path if needed
+        Image scaledImage = originalIcon.getImage().getScaledInstance(150, 300, Image.SCALE_SMOOTH); // Scale the image
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        imageLabel.setIcon(scaledIcon);
+        imageLabel.setBounds(10, 50, 160, 300); // Set bounds for the image
+        backgroundPanel.add(imageLabel);
+
+        // Create table for product data
         tableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Category", "Quantity", "Price"}, 0);
         productTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(productTable);
-        scrollPane.setBounds(50, 100, 500, 200);
-        frame.add(scrollPane);
+        scrollPane.setBounds(180, 100, 600, 200); // Adjust position to make space for the image
+        backgroundPanel.add(scrollPane);
 
+        // Buttons
         JButton listButton = new JButton("List Products");
-        listButton.setBounds(50, 50, 150, 30);
-        frame.add(listButton);
+        listButton.setBounds(180, 50, 150, 30);
+        backgroundPanel.add(listButton);
 
         listButton.addActionListener(new ActionListener() {
             @Override
@@ -132,8 +76,8 @@ public class ProductUI {
         });
 
         JButton addButton = new JButton("Add Product");
-        addButton.setBounds(250, 50, 150, 30);
-        frame.add(addButton);
+        addButton.setBounds(350, 50, 150, 30);
+        backgroundPanel.add(addButton);
 
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -141,10 +85,10 @@ public class ProductUI {
                 handleAddProduct();
             }
         });
-        
+
         JButton updateButton = new JButton("Update Product");
-        updateButton.setBounds(450, 50, 150, 30);
-        frame.add(updateButton);
+        updateButton.setBounds(520, 50, 150, 30);
+        backgroundPanel.add(updateButton);
 
         updateButton.addActionListener(new ActionListener() {
             @Override
@@ -154,8 +98,8 @@ public class ProductUI {
         });
 
         JButton deleteButton = new JButton("Delete Product");
-        deleteButton.setBounds(450, 310, 150, 30);
-        frame.add(deleteButton);
+        deleteButton.setBounds(520, 310, 150, 30);
+        backgroundPanel.add(deleteButton);
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -163,10 +107,10 @@ public class ProductUI {
                 handleDeleteProduct();
             }
         });
-        
+
         JButton searchButton = new JButton("Search");
-        searchButton.setBounds(50, 310, 150, 30);
-        frame.add(searchButton);
+        searchButton.setBounds(180, 310, 150, 30);
+        backgroundPanel.add(searchButton);
 
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -174,20 +118,15 @@ public class ProductUI {
                 handleSearchProduct();
             }
         });
-
     }
-    
-    
 
     private void handleListProducts() {
         try {
             List<Product> products = productController.getAllProducts();
-            // Clear existing rows
-            tableModel.setRowCount(0);
-            // Add products to the table model
+            tableModel.setRowCount(0); // Clear existing rows
             for (Product product : products) {
                 tableModel.addRow(new Object[]{
-                        product.getId(), // Assuming Product has a getId() method
+                        product.getId(),
                         product.getName(),
                         product.getCategory(),
                         product.getQuantity(),
@@ -255,6 +194,7 @@ public class ProductUI {
                     Product product = new Product(0, name, category, quantity, price);
                     productController.addProduct(product);
                     JOptionPane.showMessageDialog(frame, "Product added successfully!");
+                    handleListProducts(); // Refresh the product list
                     addProductDialog.dispose(); // Close the dialog
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(addProductDialog, "Error: " + ex.getMessage());
@@ -266,8 +206,7 @@ public class ProductUI {
         addProductDialog.setLocationRelativeTo(frame); // Center the dialog
         addProductDialog.setVisible(true); // Show the dialog
     }
-    
-    
+
     private void handleUpdateProduct() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -303,7 +242,6 @@ public class ProductUI {
         JTextField categoryField = new JTextField(category);
         categoryField.setBounds(100, 60, 150, 25);
         updateProductDialog.add(categoryField);
-
         JLabel quantityLabel = new JLabel("Quantity:");
         quantityLabel.setBounds(20, 100, 80, 25);
         updateProductDialog.add(quantityLabel);
@@ -337,11 +275,12 @@ public class ProductUI {
                     Product updatedProduct = new Product(productId, updatedName, updatedCategory, updatedQuantity, updatedPrice);
                     productController.updateProduct(updatedProduct);
                     JOptionPane.showMessageDialog(frame, "Product updated successfully!");
-                    updateProductDialog.dispose(); // Close the dialog
+                    handleListProducts(); // Refresh the product list
+                    updateProductDialog.dispose(); // Close the dialog     
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(updateProductDialog, "Error: " + ex.getMessage());
                 }
- }
+            }
         });
 
         updateProductDialog.add(updateButton);
@@ -368,8 +307,6 @@ public class ProductUI {
             }
         }
     }
-    
- // Method to handle search
 
     private void handleSearchProduct() {
         String searchTerm = JOptionPane.showInputDialog(frame, "Enter product name to search:");
@@ -394,9 +331,11 @@ public class ProductUI {
         }
     }
 
-
-
     public void show() {
         frame.setVisible(true);
+        handleListProducts();
     }
 }
+
+
+
